@@ -12,6 +12,9 @@ query categories verb=POST {
   
     // Display order
     int sort_order?
+  
+    // Hex color for category accent
+    text hex_color? filters=trim
   }
 
   stack {
@@ -26,6 +29,7 @@ query categories verb=POST {
         user_id   : $user.id
         name      : $input.name
         sort_order: $input.sort_order
+        hex_color : $input.hex_color
       }
     } as $new_category
   }

@@ -1,5 +1,3 @@
-import { useState } from 'react';
-
 // Heroicons - a small selection of commonly used icons
 const HERO_ICONS = {
   home: (
@@ -60,19 +58,8 @@ const HERO_ICONS = {
   ),
 };
 
-function getFaviconUrl(url) {
-  try {
-    const domain = new URL(url).hostname;
-    return `https://www.google.com/s2/favicons?sz=64&domain=${domain}`;
-  } catch {
-    return '';
-  }
-}
-
 export function BookmarkIcon({ bookmark, categoryColor }) {
-  const [imgError, setImgError] = useState(false);
-
-  const { icon_type, icon_url, symbol_name, title, url } = bookmark;
+  const { icon_type, icon_url, symbol_name, title } = bookmark;
   const color = categoryColor || '#8b5cf6';
 
   // Waterfall logic:
@@ -84,7 +71,6 @@ export function BookmarkIcon({ bookmark, categoryColor }) {
           src={icon_url}
           alt=""
           loading="lazy"
-          onError={() => setImgError(true)}
         />
       </div>
     );
@@ -115,30 +101,12 @@ export function BookmarkIcon({ bookmark, categoryColor }) {
     );
   }
 
-  // 4. Default: Favicon
-  const faviconUrl = getFaviconUrl(url);
-
-  if (imgError || !faviconUrl) {
-    // Fallback to generated if favicon fails
-    const firstLetter = title?.charAt(0) || '?';
-    return (
-      <div
-        className="bookmark-icon generated"
-        style={{ '--category-color': color }}
-      >
-        {firstLetter}
-      </div>
-    );
-  }
-
+  // 4. Default: Bookmark symbol
   return (
-    <div className="bookmark-icon favicon" style={{ '--category-color': color }}>
-      <img
-        src={faviconUrl}
-        alt=""
-        loading="lazy"
-        onError={() => setImgError(true)}
-      />
+    <div className="bookmark-icon" style={{ '--category-color': color }}>
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0 1 11.186 0Z" />
+      </svg>
     </div>
   );
 }

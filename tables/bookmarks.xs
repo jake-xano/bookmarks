@@ -22,13 +22,11 @@ table bookmarks {
     text url filters=trim
   
     // Icon display type: favicon (default), custom, symbol, or generated
-    enum icon_type?=favicon {
-      value = ["favicon", "custom", "symbol", "generated"]
-    }
-
+    text icon_type? filters=trim
+  
     // Custom icon URL (used when icon_type is 'custom')
     text icon_url? filters=trim
-
+  
     // Symbol/icon name for icon libraries (used when icon_type is 'symbol')
     text symbol_name? filters=trim
   

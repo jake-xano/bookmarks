@@ -15,10 +15,10 @@ table categories {
   
     // Order in which categories are displayed
     int sort_order?
-
+  
     // Hex color for category accent (e.g., #3b82f6)
     text hex_color? filters=trim
-
+  
     // Timestamp when the category was created
     timestamp created_at?=now
   }

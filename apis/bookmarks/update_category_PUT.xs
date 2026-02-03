@@ -15,6 +15,9 @@ query "categories/{id}" verb=PUT {
   
     // New display order (optional)
     int sort_order?
+  
+    // Hex color for category accent (optional)
+    text hex_color? filters=trim
   }
 
   stack {
@@ -51,6 +54,14 @@ query "categories/{id}" verb=PUT {
       if ($input.sort_order != null) {
         var.update $payload.sort_order {
           value = $input.sort_order
+        }
+      }
+    }
+  
+    conditional {
+      if ($input.hex_color != null) {
+        var.update $payload.hex_color {
+          value = $input.hex_color
         }
       }
     }

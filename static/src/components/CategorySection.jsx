@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { BookmarkCard } from './BookmarkCard';
 
 export function CategorySection({
@@ -11,12 +11,27 @@ export function CategorySection({
   onAddBookmark,
 }) {
   const [showMenu, setShowMenu] = useState(false);
+  const menuRef = useRef(null);
 
   const categoryColor = category.hex_color || '#8b5cf6';
   const bookmarks = category.bookmarks || [];
 
   // Calculate base animation index for staggering across all categories
   const baseAnimationIndex = categoryIndex * 10;
+
+  // Close menu when clicking outside
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setShowMenu(false);
+      }
+    }
+
+    if (showMenu) {
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => document.removeEventListener('mousedown', handleClickOutside);
+    }
+  }, [showMenu]);
 
   return (
     <div
@@ -26,7 +41,7 @@ export function CategorySection({
         animationDelay: `${categoryIndex * 100}ms`,
       }}
     >
-      <div className="category-header" onMouseLeave={() => setShowMenu(false)}>
+      <div className="category-header" ref={menuRef}>
         <h2>{category.name}</h2>
         <div className="category-actions">
           <button
