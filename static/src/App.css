@@ -282,6 +282,8 @@
   backdrop-filter: blur(10px);
   transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   animation: fadeSlideIn 0.4s ease-out both;
+  isolation: isolate;
+  z-index: 0;
 }
 
 .bookmark:hover {
@@ -289,6 +291,7 @@
   border-color: var(--border-accent);
   background: rgba(30, 41, 59, 0.8);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  z-index: 10;
 }
 
 .bookmark-link {
@@ -306,8 +309,6 @@
    ═══════════════════════════════════════════════════════════════════════════ */
 
 .bookmark-icon {
-  --icon-color-start: var(--category-color, #8b5cf6);
-  --icon-color-end: color-mix(in srgb, var(--category-color, #8b5cf6) 50%, #3b82f6 50%);
   width: 36px;
   height: 36px;
   border-radius: 10px;
@@ -315,7 +316,7 @@
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  background: linear-gradient(135deg, var(--icon-color-start) 0%, var(--icon-color-end) 100%);
+  background: linear-gradient(135deg, var(--icon-color-start, #8b5cf6) 0%, var(--icon-color-end, #a855f7) 100%);
   flex-shrink: 0;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
   transition: transform 0.2s ease;
@@ -343,7 +344,8 @@
 .bookmark-icon svg {
   width: 18px;
   height: 18px;
-  color: white;
+  color: rgba(255, 255, 255, 0.9);
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.15));
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
