@@ -1,25 +1,18 @@
 ## Development
 
-- [GitHub](https://github.com)
-- [Stack Overflow](https://stackoverflow.com)
-- [MDN Web Docs](https://developer.mozilla.org)
-- [Dev.to](https://dev.to)
+* [Automations](https://xvrs-fsxb-w8c7.n7c.xano.io/admin/workspace/3-0/dashboard)
+* [Dev](https://x62j-rlqn-vpsk.dev.xano.io/workspace/80-0/function)
+* [Docs](https://docs.xano.com/)
+* [Community](https://community.xano.com/)
+* [Gemini](https://gemini.google.com/)
 
-## Design
+## Social & Communication
 
-- [Dribbble](https://dribbble.com)
-- [Figma](https://figma.com)
-- [Coolors](https://coolors.co)
+* [Discord](https://discord.com/channels/1346854103287988265/1401950723536715898)
 
-## Social
+## Tools & CRM
 
-- [Twitter / X](https://x.com)
-- [Reddit](https://reddit.com)
-- [YouTube](https://youtube.com)
-
-## Tools
-
-- [Notion](https://notion.so)
-- [Linear](https://linear.app)
-- [Vercel](https://vercel.com)
-- [Cloudflare](https://cloudflare.com)
+* [Notion docs](https://www.notion.so/nocodebackend/Jake-Docs-a91edfc1abc04d75bd5f6650235e6a58)
+* [gCal](https://calendar.google.com/calendar/u/0/r)
+* [Hubspot](https://app.hubspot.com/property-settings/23345826/properties?type=0-1)
+* [Intercom](https://app.intercom.com/a/apps/abk6h5qu/settings)
