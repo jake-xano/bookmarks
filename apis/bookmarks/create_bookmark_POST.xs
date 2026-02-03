@@ -25,6 +25,9 @@ query bookmarks verb=POST {
     // Symbol name identifier e.g. 'star', 'home', 'bookmark'
     text symbol_name? filters=trim
   
+    // Custom color hex code override (e.g. "#f59e0b")
+    text hex_color? filters=trim
+  
     // Display order within the category
     int sort_order?
   }
@@ -56,6 +59,7 @@ query bookmarks verb=POST {
         icon_url   : $input.icon_url
         icon_type  : $input.icon_type
         symbol_name: $input.symbol_name
+        hex_color  : $input.hex_color
         sort_order : $input.sort_order
       }
     } as $new_bookmark

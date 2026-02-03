@@ -33,6 +33,9 @@ table bookmarks {
     // Order in which bookmarks are displayed within category
     int sort_order?
   
+    // Custom color hex code override (e.g. "#f59e0b")
+    text hex_color? filters=trim
+  
     // Timestamp when the bookmark was created
     timestamp created_at?=now
   }

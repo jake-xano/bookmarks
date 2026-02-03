@@ -1,6 +1,8 @@
-import { HERO_ICONS } from './BookmarkIcon';
+import * as OutlineIcons from '@heroicons/react/24/outline';
 
-const SYMBOL_OPTIONS = [
+// List of commonly used icons for the visual picker
+// Using kebab-case names that match heroicons naming
+export const SYMBOL_OPTIONS = [
   { value: '', label: 'None' },
   // General
   { value: 'home', label: 'Home' },
@@ -10,66 +12,96 @@ const SYMBOL_OPTIONS = [
   { value: 'link', label: 'Link' },
   { value: 'document', label: 'Document' },
   { value: 'calendar', label: 'Calendar' },
-  { value: 'globe', label: 'Globe' },
+  { value: 'globe-alt', label: 'Globe' },
   { value: 'heart', label: 'Heart' },
   { value: 'users', label: 'Users' },
   { value: 'share', label: 'Share' },
   // AI & Bots
   { value: 'sparkles', label: 'AI/Sparkles' },
-  { value: 'robot', label: 'Robot' },
-  { value: 'chatbot', label: 'Chatbot' },
-  { value: 'lightbulb', label: 'Lightbulb' },
+  { value: 'cpu-chip', label: 'AI Chip' },
+  { value: 'chat-bubble-left-right', label: 'Chatbot' },
+  { value: 'light-bulb', label: 'Lightbulb' },
   { value: 'eye', label: 'Vision' },
   { value: 'microphone', label: 'Voice' },
   { value: 'language', label: 'Language' },
-  { value: 'academicCap', label: 'Learning' },
+  { value: 'academic-cap', label: 'Learning' },
   // Dev & Tools
-  { value: 'code', label: 'Code' },
-  { value: 'terminal', label: 'Terminal' },
-  { value: 'wrench', label: 'Tools' },
-  { value: 'cog', label: 'Settings' },
-  { value: 'adjustments', label: 'Config' },
+  { value: 'code-bracket', label: 'Code' },
+  { value: 'command-line', label: 'Terminal' },
+  { value: 'wrench-screwdriver', label: 'Tools' },
+  { value: 'cog-6-tooth', label: 'Settings' },
+  { value: 'adjustments-horizontal', label: 'Config' },
   { value: 'beaker', label: 'Lab' },
-  { value: 'puzzle', label: 'Plugins' },
+  { value: 'puzzle-piece', label: 'Plugins' },
   // Infrastructure
-  { value: 'server', label: 'Server' },
-  { value: 'database', label: 'Database' },
-  { value: 'circleStack', label: 'Stack' },
+  { value: 'server-stack', label: 'Server' },
+  { value: 'circle-stack', label: 'Database' },
   { value: 'cloud', label: 'Cloud' },
-  { value: 'cpu', label: 'CPU' },
   { value: 'signal', label: 'API' },
+  { value: 'bolt', label: 'Bolt' },
   // Media & Analytics
   { value: 'photo', label: 'Image' },
+  { value: 'film', label: 'Film' },
   { value: 'play', label: 'Video' },
-  { value: 'chat', label: 'Chat' },
-  { value: 'chart', label: 'Analytics' },
+  { value: 'musical-note', label: 'Music' },
+  { value: 'chat-bubble-oval-left', label: 'Chat' },
+  { value: 'chart-bar', label: 'Analytics' },
+  // Communication
+  { value: 'envelope', label: 'Mail' },
+  { value: 'phone', label: 'Phone' },
+  { value: 'bell', label: 'Bell' },
+  // Commerce
+  { value: 'shopping-cart', label: 'Cart' },
+  { value: 'wallet', label: 'Wallet' },
+  { value: 'credit-card', label: 'Payment' },
+  { value: 'gift', label: 'Gift' },
+  // Security
+  { value: 'shield-check', label: 'Security' },
+  { value: 'lock-closed', label: 'Lock' },
+  { value: 'key', label: 'Key' },
   // Misc
-  { value: 'rocket', label: 'Rocket' },
-  { value: 'bolt', label: 'Bolt' },
+  { value: 'rocket-launch', label: 'Rocket' },
+  { value: 'fire', label: 'Fire' },
   { value: 'cube', label: 'Cube' },
-  { value: 'shield', label: 'Security' },
+  { value: 'map', label: 'Map' },
+  { value: 'tag', label: 'Tag' },
+  { value: 'hashtag', label: 'Hashtag' },
 ];
+
+// Convert kebab-case to PascalCase + "Icon" suffix
+function getIconComponent(name) {
+  if (!name) return null;
+  const pascalCase = name
+    .split('-')
+    .map(part => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase())
+    .join('');
+  const iconName = `${pascalCase}Icon`;
+  return OutlineIcons[iconName] || null;
+}
 
 export function SymbolPicker({ value, onChange, accentColor = '#8b5cf6' }) {
   return (
     <div className="symbol-picker">
       <div className="symbol-grid">
-        {SYMBOL_OPTIONS.map((option) => (
-          <button
-            key={option.value}
-            type="button"
-            className={`symbol-option ${value === option.value ? 'active' : ''}`}
-            onClick={() => onChange(option.value)}
-            title={option.label}
-            style={{ '--accent': accentColor }}
-          >
-            {option.value ? (
-              <span className="symbol-icon">{HERO_ICONS[option.value]}</span>
-            ) : (
-              <span className="symbol-none">—</span>
-            )}
-          </button>
-        ))}
+        {SYMBOL_OPTIONS.map((option) => {
+          const IconComponent = getIconComponent(option.value);
+          return (
+            <button
+              key={option.value || 'none'}
+              type="button"
+              className={`symbol-option ${value === option.value ? 'active' : ''}`}
+              onClick={() => onChange(option.value)}
+              title={option.label}
+              style={{ '--accent': accentColor }}
+            >
+              {IconComponent ? (
+                <span className="symbol-icon"><IconComponent /></span>
+              ) : (
+                <span className="symbol-none">—</span>
+              )}
+            </button>
+          );
+        })}
       </div>
 
       <style>{`

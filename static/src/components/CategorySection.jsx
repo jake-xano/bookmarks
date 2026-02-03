@@ -168,7 +168,7 @@ export function CategorySection({
               <SortableBookmarkCard
                 key={bookmark.id}
                 bookmark={bookmark}
-                categoryColor={categoryColor}
+                categoryColor={bookmark.hex_color || categoryColor}
                 categoryDefaultSymbol={category.default_symbol}
                 animationIndex={baseAnimationIndex + index}
                 onEdit={onEditBookmark}

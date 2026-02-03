@@ -28,6 +28,9 @@ query "bookmarks/{id}" verb=PUT {
     // Symbol name identifier e.g. 'star', 'home', 'bookmark' (optional)
     text symbol_name? filters=trim
   
+    // Custom color hex code override (e.g. "#f59e0b") (optional)
+    text hex_color? filters=trim
+  
     // New display order (optional)
     int sort_order?
   }
@@ -113,6 +116,14 @@ query "bookmarks/{id}" verb=PUT {
       if ($input.symbol_name != null) {
         var.update $payload.symbol_name {
           value = $input.symbol_name
+        }
+      }
+    }
+  
+    conditional {
+      if ($input.hex_color != null) {
+        var.update $payload.hex_color {
+          value = $input.hex_color
         }
       }
     }

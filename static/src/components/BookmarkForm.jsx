@@ -1,5 +1,8 @@
 import { useState, useEffect } from 'react';
-import { SymbolPicker } from './SymbolPicker';
+import { SymbolPicker, SYMBOL_OPTIONS } from './SymbolPicker';
+
+// Get list of predefined symbol values for checking
+const PREDEFINED_SYMBOLS = SYMBOL_OPTIONS.map(opt => opt.value).filter(Boolean);
 
 const ICON_TYPES = [
   { value: 'symbol', label: 'Icon Symbol' },
@@ -8,26 +11,54 @@ const ICON_TYPES = [
   { value: 'generated', label: 'Generated Letter' },
 ];
 
+const PRESET_COLORS = [
+  '', // Use category color
+  '#8b5cf6', // Violet
+  '#3b82f6', // Blue
+  '#06b6d4', // Cyan
+  '#10b981', // Emerald
+  '#84cc16', // Lime
+  '#f59e0b', // Amber
+  '#f97316', // Orange
+  '#ef4444', // Red
+  '#ec4899', // Pink
+];
+
 export function BookmarkForm({ bookmark, categoryId, categories, onSubmit, onCancel }) {
   const [title, setTitle] = useState('');
   const [url, setUrl] = useState('');
   const [iconType, setIconType] = useState('symbol');
   const [iconUrl, setIconUrl] = useState('');
   const [symbolName, setSymbolName] = useState('');
+  const [hexColor, setHexColor] = useState('');
   const [selectedCategoryId, setSelectedCategoryId] = useState(categoryId || '');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
   const isEditing = Boolean(bookmark);
+  const selectedCategory = categories.find(c => c.id === parseInt(selectedCategoryId));
+  const effectiveColor = hexColor || selectedCategory?.hex_color || '#8b5cf6';
 
   useEffect(() => {
     if (bookmark) {
       setTitle(bookmark.title || '');
       setUrl(bookmark.url || '');
-      setIconType(bookmark.icon_type === 'favicon' ? 'symbol' : (bookmark.icon_type || 'symbol'));
       setIconUrl(bookmark.icon_url || '');
       setSymbolName(bookmark.symbol_name || '');
+      setHexColor(bookmark.hex_color || '');
       setSelectedCategoryId(bookmark.category_id || '');
+
+      // Determine icon type - check if symbol is predefined or custom
+      let detectedIconType = bookmark.icon_type || 'symbol';
+      if (detectedIconType === 'favicon') {
+        detectedIconType = 'symbol';
+      } else if (detectedIconType === 'symbol' && bookmark.symbol_name) {
+        // Check if it's a custom symbol (not in predefined list)
+        if (!PREDEFINED_SYMBOLS.includes(bookmark.symbol_name)) {
+          detectedIconType = 'customSymbol';
+        }
+      }
+      setIconType(detectedIconType);
     } else if (categoryId) {
       setSelectedCategoryId(categoryId);
     }
@@ -56,6 +87,7 @@ export function BookmarkForm({ bookmark, categoryId, categories, onSubmit, onCan
         icon_type: isSymbolType ? 'symbol' : iconType,
         icon_url: iconType === 'custom' ? iconUrl : null,
         symbol_name: isSymbolType ? symbolName : null,
+        hex_color: hexColor || null,
         category_id: parseInt(selectedCategoryId, 10),
         sort_order: getSortOrder(),
       });
@@ -111,6 +143,27 @@ export function BookmarkForm({ bookmark, categoryId, categories, onSubmit, onCan
       </div>
 
       <div className="form-group">
+        <label>Color Override</label>
+        <div className="color-presets">
+          {PRESET_COLORS.map((color, index) => (
+            <button
+              key={color || 'default'}
+              type="button"
+              className={`color-preset ${hexColor === color ? 'active' : ''}`}
+              style={{
+                '--preset-color': color || selectedCategory?.hex_color || '#8b5cf6',
+                opacity: color ? 1 : 0.5
+              }}
+              onClick={() => setHexColor(color)}
+              title={color ? color : 'Use category color'}
+            >
+              {!color && <span style={{ fontSize: '10px', color: 'white' }}>Auto</span>}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className="form-group">
         <label htmlFor="iconType">Icon Type</label>
         <select
           id="iconType"
@@ -159,7 +212,7 @@ export function BookmarkForm({ bookmark, categoryId, categories, onSubmit, onCan
           <SymbolPicker
             value={symbolName}
             onChange={setSymbolName}
-            accentColor={categories.find(c => c.id === parseInt(selectedCategoryId))?.hex_color || '#8b5cf6'}
+            accentColor={effectiveColor}
           />
         </div>
       )}
@@ -198,6 +251,33 @@ export function BookmarkForm({ bookmark, categoryId, categories, onSubmit, onCan
           {loading ? 'Saving...' : isEditing ? 'Update' : 'Create'}
         </button>
       </div>
+
+      <style>{`
+        .color-presets {
+          display: flex;
+          gap: 0.4rem;
+          flex-wrap: wrap;
+        }
+        .color-preset {
+          width: 28px;
+          height: 28px;
+          border-radius: 6px;
+          border: 2px solid transparent;
+          background: var(--preset-color);
+          cursor: pointer;
+          transition: all 0.15s ease;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+        .color-preset:hover {
+          transform: scale(1.1);
+        }
+        .color-preset.active {
+          border-color: var(--text-primary);
+          box-shadow: 0 0 0 2px var(--bg-base), 0 0 0 4px var(--preset-color);
+        }
+      `}</style>
     </form>
   );
 }
