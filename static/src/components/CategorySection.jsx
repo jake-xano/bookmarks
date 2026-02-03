@@ -169,6 +169,7 @@ export function CategorySection({
                 key={bookmark.id}
                 bookmark={bookmark}
                 categoryColor={categoryColor}
+                categoryDefaultSymbol={category.default_symbol}
                 animationIndex={baseAnimationIndex + index}
                 onEdit={onEditBookmark}
                 onDelete={onDeleteBookmark}

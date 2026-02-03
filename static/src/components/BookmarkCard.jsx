@@ -5,7 +5,7 @@ import { BookmarkIcon } from './BookmarkIcon';
 
 // The actual bookmark card content
 const BookmarkCardContent = forwardRef(function BookmarkCardContent(
-  { bookmark, categoryColor, onEdit, onDelete, isDragging, dropPosition, style, className = '', ...props },
+  { bookmark, categoryColor, categoryDefaultSymbol, onEdit, onDelete, isDragging, dropPosition, style, className = '', ...props },
   ref
 ) {
   return (
@@ -29,7 +29,7 @@ const BookmarkCardContent = forwardRef(function BookmarkCardContent(
           }
         }}
       >
-        <BookmarkIcon bookmark={bookmark} categoryColor={categoryColor} />
+        <BookmarkIcon bookmark={bookmark} categoryColor={categoryColor} categoryDefaultSymbol={categoryDefaultSymbol} />
         <span className="bookmark-title">{bookmark.title}</span>
       </a>
       {onEdit && onDelete && (
@@ -67,7 +67,7 @@ const BookmarkCardContent = forwardRef(function BookmarkCardContent(
 });
 
 // Sortable wrapper for grid items
-export function SortableBookmarkCard({ bookmark, categoryColor, animationIndex, onEdit, onDelete, dropPosition, disableAnimation: disableAnimationProp }) {
+export function SortableBookmarkCard({ bookmark, categoryColor, categoryDefaultSymbol, animationIndex, onEdit, onDelete, dropPosition, disableAnimation: disableAnimationProp }) {
   const {
     attributes,
     listeners,
@@ -95,6 +95,7 @@ export function SortableBookmarkCard({ bookmark, categoryColor, animationIndex, 
       style={style}
       bookmark={bookmark}
       categoryColor={categoryColor}
+      categoryDefaultSymbol={categoryDefaultSymbol}
       onEdit={onEdit}
       onDelete={onDelete}
       isDragging={isDragging}

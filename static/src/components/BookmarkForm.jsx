@@ -1,34 +1,20 @@
 import { useState, useEffect } from 'react';
+import { SymbolPicker } from './SymbolPicker';
 
 const ICON_TYPES = [
-  { value: 'favicon', label: 'Favicon (auto)' },
-  { value: 'custom', label: 'Custom Image URL' },
   { value: 'symbol', label: 'Icon Symbol' },
+  { value: 'customSymbol', label: 'Custom Symbol Name' },
+  { value: 'custom', label: 'Custom Image URL' },
   { value: 'generated', label: 'Generated Letter' },
-];
-
-const SYMBOL_OPTIONS = [
-  { value: 'home', label: 'Home' },
-  { value: 'star', label: 'Star' },
-  { value: 'bookmark', label: 'Bookmark' },
-  { value: 'folder', label: 'Folder' },
-  { value: 'link', label: 'Link' },
-  { value: 'code', label: 'Code' },
-  { value: 'document', label: 'Document' },
-  { value: 'chat', label: 'Chat' },
-  { value: 'calendar', label: 'Calendar' },
-  { value: 'cog', label: 'Settings' },
-  { value: 'globe', label: 'Globe' },
 ];
 
 export function BookmarkForm({ bookmark, categoryId, categories, onSubmit, onCancel }) {
   const [title, setTitle] = useState('');
   const [url, setUrl] = useState('');
-  const [iconType, setIconType] = useState('favicon');
+  const [iconType, setIconType] = useState('symbol');
   const [iconUrl, setIconUrl] = useState('');
   const [symbolName, setSymbolName] = useState('');
   const [selectedCategoryId, setSelectedCategoryId] = useState(categoryId || '');
-  const [sortOrder, setSortOrder] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -38,15 +24,24 @@ export function BookmarkForm({ bookmark, categoryId, categories, onSubmit, onCan
     if (bookmark) {
       setTitle(bookmark.title || '');
       setUrl(bookmark.url || '');
-      setIconType(bookmark.icon_type || 'favicon');
+      setIconType(bookmark.icon_type === 'favicon' ? 'symbol' : (bookmark.icon_type || 'symbol'));
       setIconUrl(bookmark.icon_url || '');
       setSymbolName(bookmark.symbol_name || '');
       setSelectedCategoryId(bookmark.category_id || '');
-      setSortOrder(bookmark.sort_order || 0);
     } else if (categoryId) {
       setSelectedCategoryId(categoryId);
     }
   }, [bookmark, categoryId]);
+
+  // Calculate sort order: keep existing for edits, or place at end for new
+  const getSortOrder = () => {
+    if (isEditing) return bookmark.sort_order || 0;
+    const category = categories.find(c => c.id === parseInt(selectedCategoryId));
+    const existingBookmarks = category?.bookmarks || [];
+    return existingBookmarks.length > 0
+      ? Math.max(...existingBookmarks.map(b => b.sort_order || 0)) + 1
+      : 0;
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -54,14 +49,15 @@ export function BookmarkForm({ bookmark, categoryId, categories, onSubmit, onCan
     setError(null);
 
     try {
+      const isSymbolType = iconType === 'symbol' || iconType === 'customSymbol';
       await onSubmit({
         title,
         url,
-        icon_type: iconType,
+        icon_type: isSymbolType ? 'symbol' : iconType,
         icon_url: iconType === 'custom' ? iconUrl : null,
-        symbol_name: iconType === 'symbol' ? symbolName : null,
+        symbol_name: isSymbolType ? symbolName : null,
         category_id: parseInt(selectedCategoryId, 10),
-        sort_order: parseInt(sortOrder, 10),
+        sort_order: getSortOrder(),
       });
     } catch (err) {
       setError(err.message);
@@ -131,7 +127,19 @@ export function BookmarkForm({ bookmark, categoryId, categories, onSubmit, onCan
 
       {iconType === 'custom' && (
         <div className="form-group">
-          <label htmlFor="iconUrl">Custom Icon URL</label>
+          <label htmlFor="iconUrl">
+            Custom Icon URL{' '}
+            {title && (
+              <a
+                href={`https://www.google.com/search?q=${encodeURIComponent(title + ' logo icon transparent')}&tbm=isch`}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ fontSize: '0.75rem', color: 'var(--accent-default)', opacity: 0.8 }}
+              >
+                (search for "{title}" icon →)
+              </a>
+            )}
+          </label>
           <input
             id="iconUrl"
             type="url"
@@ -139,37 +147,48 @@ export function BookmarkForm({ bookmark, categoryId, categories, onSubmit, onCan
             onChange={(e) => setIconUrl(e.target.value)}
             placeholder="https://example.com/icon.png"
           />
+          <small style={{ color: 'var(--text-muted)', fontSize: '0.7rem' }}>
+            Tip: Right-click an image and copy the image URL
+          </small>
         </div>
       )}
 
       {iconType === 'symbol' && (
         <div className="form-group">
-          <label htmlFor="symbolName">Icon Symbol</label>
-          <select
-            id="symbolName"
+          <label>Icon Symbol</label>
+          <SymbolPicker
             value={symbolName}
-            onChange={(e) => setSymbolName(e.target.value)}
-          >
-            <option value="">Select icon</option>
-            {SYMBOL_OPTIONS.map((opt) => (
-              <option key={opt.value} value={opt.value}>
-                {opt.label}
-              </option>
-            ))}
-          </select>
+            onChange={setSymbolName}
+            accentColor={categories.find(c => c.id === parseInt(selectedCategoryId))?.hex_color || '#8b5cf6'}
+          />
         </div>
       )}
 
-      <div className="form-group">
-        <label htmlFor="sortOrder">Sort Order</label>
-        <input
-          id="sortOrder"
-          type="number"
-          value={sortOrder}
-          onChange={(e) => setSortOrder(e.target.value)}
-          min="0"
-        />
-      </div>
+      {iconType === 'customSymbol' && (
+        <div className="form-group">
+          <label htmlFor="customSymbolName">
+            Symbol Name{' '}
+            <a
+              href="https://heroicons.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ fontSize: '0.75rem', color: 'var(--accent-default)', opacity: 0.8 }}
+            >
+              (browse heroicons →)
+            </a>
+          </label>
+          <input
+            id="customSymbolName"
+            type="text"
+            value={symbolName}
+            onChange={(e) => setSymbolName(e.target.value.toLowerCase().replace(/\s+/g, '-'))}
+            placeholder="e.g. arrow-right, bell, fire"
+          />
+          <small style={{ color: 'var(--text-muted)', fontSize: '0.7rem' }}>
+            Use the icon name from Heroicons (outline style, kebab-case)
+          </small>
+        </div>
+      )}
 
       <div className="form-actions">
         <button type="button" onClick={onCancel} disabled={loading}>

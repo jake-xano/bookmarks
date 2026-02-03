@@ -19,6 +19,9 @@ table categories {
     // Hex color for category accent (e.g., #3b82f6)
     text hex_color? filters=trim
   
+    // Icon name for the category (e.g., "home", "star", "bookmark")
+    text default_symbol?
+  
     // Timestamp when the category was created
     timestamp created_at?=now
   }

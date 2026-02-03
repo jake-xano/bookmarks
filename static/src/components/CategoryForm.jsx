@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { SymbolPicker } from './SymbolPicker';
 
 // Preset colors for quick selection
 const PRESET_COLORS = [
@@ -16,6 +17,7 @@ const PRESET_COLORS = [
 export function CategoryForm({ category, onSubmit, onCancel }) {
   const [name, setName] = useState('');
   const [hexColor, setHexColor] = useState('#8b5cf6');
+  const [defaultSymbol, setDefaultSymbol] = useState('');
   const [sortOrder, setSortOrder] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -26,6 +28,7 @@ export function CategoryForm({ category, onSubmit, onCancel }) {
     if (category) {
       setName(category.name || '');
       setHexColor(category.hex_color || '#8b5cf6');
+      setDefaultSymbol(category.default_symbol || '');
       setSortOrder(category.sort_order || 0);
     }
   }, [category]);
@@ -39,6 +42,7 @@ export function CategoryForm({ category, onSubmit, onCancel }) {
       await onSubmit({
         name,
         hex_color: hexColor,
+        default_symbol: defaultSymbol || null,
         sort_order: parseInt(sortOrder, 10),
       });
     } catch (err) {
@@ -91,6 +95,15 @@ export function CategoryForm({ category, onSubmit, onCancel }) {
             pattern="^#[0-9A-Fa-f]{6}$"
           />
         </div>
+      </div>
+
+      <div className="form-group">
+        <label>Default Icon for Bookmarks</label>
+        <SymbolPicker
+          value={defaultSymbol}
+          onChange={setDefaultSymbol}
+          accentColor={hexColor}
+        />
       </div>
 
       <div className="form-group">

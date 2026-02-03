@@ -15,6 +15,9 @@ query categories verb=POST {
   
     // Hex color for category accent
     text hex_color? filters=trim
+  
+    // Icon name for the category
+    text default_symbol? filters=trim
   }
 
   stack {
@@ -26,10 +29,11 @@ query categories verb=POST {
     // Create the category with user_id
     db.add categories {
       data = {
-        user_id   : $user.id
-        name      : $input.name
-        sort_order: $input.sort_order
-        hex_color : $input.hex_color
+        user_id       : $user.id
+        name          : $input.name
+        sort_order    : $input.sort_order
+        hex_color     : $input.hex_color
+        default_symbol: $input.default_symbol
       }
     } as $new_category
   }

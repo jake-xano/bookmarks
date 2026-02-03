@@ -18,6 +18,9 @@ query "categories/{id}" verb=PUT {
   
     // Hex color for category accent (optional)
     text hex_color? filters=trim
+  
+    // Icon name for the category (optional)
+    text default_symbol? filters=trim
   }
 
   stack {
@@ -62,6 +65,14 @@ query "categories/{id}" verb=PUT {
       if ($input.hex_color != null) {
         var.update $payload.hex_color {
           value = $input.hex_color
+        }
+      }
+    }
+  
+    conditional {
+      if ($input.default_symbol != null) {
+        var.update $payload.default_symbol {
+          value = $input.default_symbol
         }
       }
     }
