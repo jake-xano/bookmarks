@@ -1,53 +1,109 @@
+import { forwardRef } from 'react';
+import { useSortable } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 import { BookmarkIcon } from './BookmarkIcon';
 
-export function BookmarkCard({ bookmark, categoryColor, animationIndex = 0, onEdit, onDelete }) {
-  const animationDelay = `${animationIndex * 50}ms`;
-
+// The actual bookmark card content
+const BookmarkCardContent = forwardRef(function BookmarkCardContent(
+  { bookmark, categoryColor, onEdit, onDelete, isDragging, dropPosition, style, className = '', ...props },
+  ref
+) {
   return (
     <div
-      className="bookmark"
+      ref={ref}
+      className={`bookmark ${className} ${isDragging ? 'dragging' : ''} ${dropPosition ? `drop-${dropPosition}` : ''}`}
       style={{
         '--category-color': categoryColor,
-        animationDelay,
+        ...style,
       }}
+      {...props}
     >
       <a
         href={bookmark.url}
         target="_blank"
         rel="noopener noreferrer"
         className="bookmark-link"
+        onClick={(e) => {
+          if (isDragging) {
+            e.preventDefault();
+          }
+        }}
       >
         <BookmarkIcon bookmark={bookmark} categoryColor={categoryColor} />
         <span className="bookmark-title">{bookmark.title}</span>
       </a>
-      <div className="bookmark-actions">
-        <button
-          className="bookmark-action-btn"
-          onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            onEdit(bookmark);
-          }}
-          aria-label="Edit bookmark"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
-          </svg>
-        </button>
-        <button
-          className="bookmark-action-btn delete"
-          onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            onDelete(bookmark);
-          }}
-          aria-label="Delete bookmark"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M3 6h18M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
-          </svg>
-        </button>
-      </div>
+      {onEdit && onDelete && (
+        <div className="bookmark-actions">
+          <button
+            className="bookmark-action-btn"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              onEdit(bookmark);
+            }}
+            aria-label="Edit bookmark"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
+            </svg>
+          </button>
+          <button
+            className="bookmark-action-btn delete"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              onDelete(bookmark);
+            }}
+            aria-label="Delete bookmark"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M3 6h18M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
+            </svg>
+          </button>
+        </div>
+      )}
     </div>
   );
+});
+
+// Sortable wrapper for grid items
+export function SortableBookmarkCard({ bookmark, categoryColor, animationIndex, onEdit, onDelete, dropPosition, disableAnimation: disableAnimationProp }) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+    isSorting,
+  } = useSortable({ id: bookmark.id });
+
+  // Disable entrance animation during/after sorting to prevent flash
+  const disableAnimation = disableAnimationProp || isSorting || transform;
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    animationDelay: disableAnimation ? undefined : `${animationIndex * 50}ms`,
+    animation: disableAnimation ? 'none' : undefined,
+    zIndex: isDragging ? 100 : undefined,
+  };
+
+  return (
+    <BookmarkCardContent
+      ref={setNodeRef}
+      style={style}
+      bookmark={bookmark}
+      categoryColor={categoryColor}
+      onEdit={onEdit}
+      onDelete={onDelete}
+      isDragging={isDragging}
+      dropPosition={dropPosition}
+      {...attributes}
+      {...listeners}
+    />
+  );
 }
+
+// Keep the original export for backwards compatibility
+export const BookmarkCard = BookmarkCardContent;

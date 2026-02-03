@@ -83,3 +83,15 @@ export async function deleteCategory(id) {
     method: 'DELETE',
   });
 }
+
+// Reorder bookmarks within a category
+export async function reorderBookmarks(bookmarkUpdates) {
+  // Update each bookmark's sort_order in parallel
+  const updates = bookmarkUpdates.map(({ id, sort_order }) =>
+    apiRequest(`/bookmarks/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify({ sort_order }),
+    })
+  );
+  return Promise.all(updates);
+}

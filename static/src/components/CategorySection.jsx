@@ -1,5 +1,19 @@
 import { useState, useEffect, useRef } from 'react';
-import { BookmarkCard } from './BookmarkCard';
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  rectSortingStrategy,
+} from '@dnd-kit/sortable';
+import { SortableBookmarkCard } from './BookmarkCard';
 
 export function CategorySection({
   category,
@@ -9,17 +23,30 @@ export function CategorySection({
   onEditCategory,
   onDeleteCategory,
   onAddBookmark,
+  onReorderBookmarks,
 }) {
   const [showMenu, setShowMenu] = useState(false);
+  const [activeId, setActiveId] = useState(null);
+  const [overId, setOverId] = useState(null);
+  const [hasReordered, setHasReordered] = useState(false);
   const menuRef = useRef(null);
 
   const categoryColor = category.hex_color || '#8b5cf6';
   const bookmarks = category.bookmarks || [];
 
-  // Calculate base animation index for staggering across all categories
   const baseAnimationIndex = categoryIndex * 10;
 
-  // Close menu when clicking outside
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+
   useEffect(() => {
     function handleClickOutside(event) {
       if (menuRef.current && !menuRef.current.contains(event.target)) {
@@ -32,6 +59,47 @@ export function CategorySection({
       return () => document.removeEventListener('mousedown', handleClickOutside);
     }
   }, [showMenu]);
+
+  const handleDragStart = (event) => {
+    setActiveId(event.active.id);
+  };
+
+  const handleDragOver = (event) => {
+    setOverId(event.over?.id || null);
+  };
+
+  const handleDragEnd = (event) => {
+    const { active, over } = event;
+    setActiveId(null);
+    setOverId(null);
+
+    if (over && active.id !== over.id) {
+      const oldIndex = bookmarks.findIndex((b) => b.id === active.id);
+      const newIndex = bookmarks.findIndex((b) => b.id === over.id);
+
+      if (oldIndex !== -1 && newIndex !== -1) {
+        const reordered = arrayMove(bookmarks, oldIndex, newIndex);
+        setHasReordered(true);
+        onReorderBookmarks(category.id, reordered);
+      }
+    }
+  };
+
+  const handleDragCancel = () => {
+    setActiveId(null);
+    setOverId(null);
+  };
+
+  // Determine drop position relative to the hovered item
+  const getDropPosition = (bookmarkId) => {
+    if (!activeId || !overId || activeId === bookmarkId) return null;
+    if (overId !== bookmarkId) return null;
+
+    const activeIndex = bookmarks.findIndex((b) => b.id === activeId);
+    const overIndex = bookmarks.findIndex((b) => b.id === overId);
+
+    return activeIndex < overIndex ? 'after' : 'before';
+  };
 
   return (
     <div
@@ -86,18 +154,31 @@ export function CategorySection({
           </div>
         )}
       </div>
-      <div className="grid">
-        {bookmarks.map((bookmark, index) => (
-          <BookmarkCard
-            key={bookmark.id}
-            bookmark={bookmark}
-            categoryColor={categoryColor}
-            animationIndex={baseAnimationIndex + index}
-            onEdit={onEditBookmark}
-            onDelete={onDeleteBookmark}
-          />
-        ))}
-      </div>
+      <DndContext
+        sensors={sensors}
+        collisionDetection={closestCenter}
+        onDragStart={handleDragStart}
+        onDragOver={handleDragOver}
+        onDragEnd={handleDragEnd}
+        onDragCancel={handleDragCancel}
+      >
+        <SortableContext items={bookmarks.map((b) => b.id)} strategy={rectSortingStrategy}>
+          <div className="grid">
+            {bookmarks.map((bookmark, index) => (
+              <SortableBookmarkCard
+                key={bookmark.id}
+                bookmark={bookmark}
+                categoryColor={categoryColor}
+                animationIndex={baseAnimationIndex + index}
+                onEdit={onEditBookmark}
+                onDelete={onDeleteBookmark}
+                dropPosition={getDropPosition(bookmark.id)}
+                disableAnimation={hasReordered}
+              />
+            ))}
+          </div>
+        </SortableContext>
+      </DndContext>
     </div>
   );
 }

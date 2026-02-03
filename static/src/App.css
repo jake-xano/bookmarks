@@ -418,6 +418,53 @@
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
+   DRAG AND DROP
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.bookmark {
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+  position: relative;
+}
+
+.bookmark:active {
+  cursor: grabbing;
+}
+
+/* The item being dragged - make it look lifted */
+.bookmark.dragging {
+  cursor: grabbing;
+  box-shadow:
+    0 20px 40px rgba(0, 0, 0, 0.4),
+    0 0 0 2px var(--category-color, var(--accent-default));
+  opacity: 1;
+  animation: none !important;
+}
+
+/* Drop indicator - shows where the item will be placed */
+.bookmark.drop-before::before,
+.bookmark.drop-after::after {
+  content: '';
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  width: 3px;
+  background: var(--category-color, var(--accent-default));
+  border-radius: 3px;
+  box-shadow: 0 0 8px var(--category-color, var(--accent-default));
+  z-index: 10;
+}
+
+.bookmark.drop-before::before {
+  left: -5px;
+}
+
+.bookmark.drop-after::after {
+  right: -5px;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
    MODAL
    ═══════════════════════════════════════════════════════════════════════════ */
 

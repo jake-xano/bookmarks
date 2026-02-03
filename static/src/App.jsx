@@ -19,6 +19,7 @@ function App() {
     addCategory,
     editCategory,
     removeCategory,
+    reorderBookmarks,
   } = useBookmarks();
 
   // Modal states
@@ -155,6 +156,7 @@ function App() {
               onEditCategory={handleEditCategory}
               onDeleteCategory={handleDeleteCategory}
               onAddBookmark={handleAddBookmark}
+              onReorderBookmarks={reorderBookmarks}
             />
           ))
         )}

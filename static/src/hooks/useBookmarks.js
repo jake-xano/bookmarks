@@ -66,8 +66,31 @@ export function useBookmarks() {
     await fetchBookmarks();
   };
 
+  const reorderBookmarks = (categoryId, reorderedBookmarks) => {
+    // Optimistically update UI immediately
+    setCategories((prev) =>
+      prev.map((cat) =>
+        cat.id === categoryId ? { ...cat, bookmarks: reorderedBookmarks } : cat
+      )
+    );
+
+    // Prepare updates with new sort_order values (start from 1 to avoid 0 being treated as falsy)
+    const bookmarkUpdates = reorderedBookmarks.map((bookmark, index) => ({
+      id: bookmark.id,
+      sort_order: index + 1,
+    }));
+
+    // Save in background - don't await
+    api.reorderBookmarks(bookmarkUpdates).catch((err) => {
+      console.error('Failed to save bookmark order:', err);
+      // Silently refetch to restore correct order
+      fetchBookmarks();
+    });
+  };
+
   return {
     categories,
+    setCategories,
     loading,
     error,
     hasToken,
@@ -78,5 +101,6 @@ export function useBookmarks() {
     addCategory,
     editCategory,
     removeCategory,
+    reorderBookmarks,
   };
 }
