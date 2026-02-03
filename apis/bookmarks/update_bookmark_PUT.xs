@@ -22,6 +22,12 @@ query "bookmarks/{id}" verb=PUT {
     // New custom icon URL (optional)
     text icon_url? filters=trim
   
+    // Icon type: 'favicon', 'custom', 'symbol', or 'generated' (optional)
+    text icon_type? filters=trim
+  
+    // Symbol name identifier e.g. 'star', 'home', 'bookmark' (optional)
+    text symbol_name? filters=trim
+  
     // New display order (optional)
     int sort_order?
   }
@@ -91,6 +97,22 @@ query "bookmarks/{id}" verb=PUT {
       if ($input.icon_url != null) {
         var.update $payload.icon_url {
           value = $input.icon_url
+        }
+      }
+    }
+  
+    conditional {
+      if ($input.icon_type != null) {
+        var.update $payload.icon_type {
+          value = $input.icon_type
+        }
+      }
+    }
+  
+    conditional {
+      if ($input.symbol_name != null) {
+        var.update $payload.symbol_name {
+          value = $input.symbol_name
         }
       }
     }

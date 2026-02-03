@@ -19,6 +19,12 @@ query bookmarks verb=POST {
     // Custom icon URL override
     text icon_url? filters=trim
   
+    // Icon type: 'favicon', 'custom', 'symbol', or 'generated'
+    text icon_type? filters=trim
+  
+    // Symbol name identifier e.g. 'star', 'home', 'bookmark'
+    text symbol_name? filters=trim
+  
     // Display order within the category
     int sort_order?
   }
@@ -48,6 +54,8 @@ query bookmarks verb=POST {
         title      : $input.title
         url        : $input.url
         icon_url   : $input.icon_url
+        icon_type  : $input.icon_type
+        symbol_name: $input.symbol_name
         sort_order : $input.sort_order
       }
     } as $new_bookmark
