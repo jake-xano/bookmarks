@@ -80,11 +80,19 @@ function App() {
     setDeleteConfirm({ isOpen: false, type: null, item: null });
   };
 
+  const logoIcon = (
+    <span className="logo-icon">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0 1 11.186 0Z" />
+      </svg>
+    </span>
+  );
+
   // Render access denied
   if (!hasToken) {
     return (
       <div className="container">
-        <h1><span className="accent">/</span> Bookmarks</h1>
+        <h1>{logoIcon}Bookmarks</h1>
         <p className="error-message">Access denied. Please provide a valid token.</p>
       </div>
     );
@@ -94,8 +102,8 @@ function App() {
   if (loading) {
     return (
       <div className="container">
-        <h1><span className="accent">/</span> Bookmarks</h1>
-        <p className="loading">Loading bookmarks...</p>
+        <h1>{logoIcon}Bookmarks</h1>
+        <p className="loading">Loading</p>
       </div>
     );
   }
@@ -104,7 +112,7 @@ function App() {
   if (error) {
     return (
       <div className="container">
-        <h1><span className="accent">/</span> Bookmarks</h1>
+        <h1>{logoIcon}Bookmarks</h1>
         <p className="error-message">{error}</p>
       </div>
     );
@@ -113,20 +121,32 @@ function App() {
   return (
     <div className="container">
       <header className="header">
-        <h1><span className="accent">/</span> Bookmarks</h1>
-        <button className="add-category-btn" onClick={handleAddCategory}>
-          + Category
-        </button>
+        <h1>{logoIcon}Bookmarks</h1>
+        <div className="header-actions">
+          <button className="btn btn-secondary" onClick={handleAddCategory}>
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 5v14M5 12h14" />
+            </svg>
+            Category
+          </button>
+          <button className="btn btn-primary" onClick={() => setBookmarkModal({ isOpen: true, bookmark: null, categoryId: categories[0]?.id || null })}>
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 5v14M5 12h14" />
+            </svg>
+            Bookmark
+          </button>
+        </div>
       </header>
 
       <main>
         {categories.length === 0 ? (
           <p className="empty-message">No bookmarks yet. Add a category to get started.</p>
         ) : (
-          categories.map((category) => (
+          categories.map((category, index) => (
             <CategorySection
               key={category.id}
               category={category}
+              categoryIndex={index}
               onEditBookmark={handleEditBookmark}
               onDeleteBookmark={handleDeleteBookmark}
               onEditCategory={handleEditCategory}

@@ -1,7 +1,21 @@
 import { useState, useEffect } from 'react';
 
+// Preset colors for quick selection
+const PRESET_COLORS = [
+  '#8b5cf6', // Violet (primary)
+  '#3b82f6', // Blue
+  '#06b6d4', // Cyan
+  '#10b981', // Emerald
+  '#84cc16', // Lime
+  '#f59e0b', // Amber
+  '#f97316', // Orange
+  '#ef4444', // Red
+  '#ec4899', // Pink
+];
+
 export function CategoryForm({ category, onSubmit, onCancel }) {
   const [name, setName] = useState('');
+  const [hexColor, setHexColor] = useState('#8b5cf6');
   const [sortOrder, setSortOrder] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -11,6 +25,7 @@ export function CategoryForm({ category, onSubmit, onCancel }) {
   useEffect(() => {
     if (category) {
       setName(category.name || '');
+      setHexColor(category.hex_color || '#8b5cf6');
       setSortOrder(category.sort_order || 0);
     }
   }, [category]);
@@ -23,6 +38,7 @@ export function CategoryForm({ category, onSubmit, onCancel }) {
     try {
       await onSubmit({
         name,
+        hex_color: hexColor,
         sort_order: parseInt(sortOrder, 10),
       });
     } catch (err) {
@@ -48,6 +64,36 @@ export function CategoryForm({ category, onSubmit, onCancel }) {
       </div>
 
       <div className="form-group">
+        <label>Accent Color</label>
+        <div className="color-presets">
+          {PRESET_COLORS.map((color) => (
+            <button
+              key={color}
+              type="button"
+              className={`color-preset ${hexColor === color ? 'active' : ''}`}
+              style={{ '--preset-color': color }}
+              onClick={() => setHexColor(color)}
+              aria-label={`Select color ${color}`}
+            />
+          ))}
+        </div>
+        <div className="color-input-wrapper">
+          <input
+            type="color"
+            value={hexColor}
+            onChange={(e) => setHexColor(e.target.value)}
+          />
+          <input
+            type="text"
+            value={hexColor}
+            onChange={(e) => setHexColor(e.target.value)}
+            placeholder="#8b5cf6"
+            pattern="^#[0-9A-Fa-f]{6}$"
+          />
+        </div>
+      </div>
+
+      <div className="form-group">
         <label htmlFor="sortOrder">Sort Order</label>
         <input
           id="sortOrder"
@@ -66,6 +112,31 @@ export function CategoryForm({ category, onSubmit, onCancel }) {
           {loading ? 'Saving...' : isEditing ? 'Update' : 'Create'}
         </button>
       </div>
+
+      <style>{`
+        .color-presets {
+          display: flex;
+          gap: 0.5rem;
+          margin-bottom: 0.75rem;
+          flex-wrap: wrap;
+        }
+        .color-preset {
+          width: 32px;
+          height: 32px;
+          border-radius: 8px;
+          border: 2px solid transparent;
+          background: var(--preset-color);
+          cursor: pointer;
+          transition: all 0.15s ease;
+        }
+        .color-preset:hover {
+          transform: scale(1.1);
+        }
+        .color-preset.active {
+          border-color: var(--text-primary);
+          box-shadow: 0 0 0 2px var(--bg-base), 0 0 0 4px var(--preset-color);
+        }
+      `}</style>
     </form>
   );
 }

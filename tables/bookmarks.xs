@@ -21,8 +21,16 @@ table bookmarks {
     // URL the bookmark points to
     text url filters=trim
   
-    // Custom icon URL override, uses favicon if not set
+    // Icon display type: favicon (default), custom, symbol, or generated
+    enum icon_type?=favicon {
+      value = ["favicon", "custom", "symbol", "generated"]
+    }
+
+    // Custom icon URL (used when icon_type is 'custom')
     text icon_url? filters=trim
+
+    // Symbol/icon name for icon libraries (used when icon_type is 'symbol')
+    text symbol_name? filters=trim
   
     // Order in which bookmarks are displayed within category
     int sort_order?

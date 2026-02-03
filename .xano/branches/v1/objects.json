@@ -254,7 +254,7 @@
   {
     "id": 4498,
     "path": "tables/categories.xs",
-    "status": "unchanged",
+    "status": "changed",
     "type": "table",
     "staged": false,
     "sha256": "49592ba060a95092b9c3d8c4f04e32900775847b3c4ce689d14dbd80bd11ef60",
@@ -263,7 +263,7 @@
   {
     "id": 4499,
     "path": "tables/bookmarks.xs",
-    "status": "unchanged",
+    "status": "changed",
     "type": "table",
     "staged": false,
     "sha256": "753c38fda97091ea2f66f2936aaa4586153bd0cd4d0085f8609ae7b7fb8176d2",

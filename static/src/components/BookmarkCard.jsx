@@ -1,42 +1,34 @@
 import { useState } from 'react';
+import { BookmarkIcon } from './BookmarkIcon';
 
-function getFaviconUrl(url) {
-  try {
-    const domain = new URL(url).hostname;
-    return `https://www.google.com/s2/favicons?domain=${domain}&sz=64`;
-  } catch {
-    return '';
-  }
-}
-
-export function BookmarkCard({ bookmark, onEdit, onDelete }) {
+export function BookmarkCard({ bookmark, categoryColor, animationIndex = 0, onEdit, onDelete }) {
   const [showMenu, setShowMenu] = useState(false);
-  const [imgError, setImgError] = useState(false);
 
-  const iconUrl = bookmark.icon_url || getFaviconUrl(bookmark.url);
+  const animationDelay = `${animationIndex * 50}ms`;
 
   return (
-    <div className="bookmark" onMouseLeave={() => setShowMenu(false)}>
+    <div
+      className="bookmark"
+      style={{
+        '--category-color': categoryColor,
+        animationDelay,
+      }}
+      onMouseLeave={() => setShowMenu(false)}
+    >
       <a
         href={bookmark.url}
         target="_blank"
         rel="noopener noreferrer"
         className="bookmark-link"
       >
-        {!imgError && iconUrl && (
-          <img
-            src={iconUrl}
-            alt=""
-            loading="lazy"
-            onError={() => setImgError(true)}
-          />
-        )}
-        <span>{bookmark.title}</span>
+        <BookmarkIcon bookmark={bookmark} categoryColor={categoryColor} />
+        <span className="bookmark-title">{bookmark.title}</span>
       </a>
       <button
         className="bookmark-menu-btn"
         onClick={(e) => {
           e.preventDefault();
+          e.stopPropagation();
           setShowMenu(!showMenu);
         }}
         aria-label="Bookmark options"

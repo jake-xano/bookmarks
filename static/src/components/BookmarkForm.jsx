@@ -1,9 +1,32 @@
 import { useState, useEffect } from 'react';
 
+const ICON_TYPES = [
+  { value: 'favicon', label: 'Favicon (auto)' },
+  { value: 'custom', label: 'Custom Image URL' },
+  { value: 'symbol', label: 'Icon Symbol' },
+  { value: 'generated', label: 'Generated Letter' },
+];
+
+const SYMBOL_OPTIONS = [
+  { value: 'home', label: 'Home' },
+  { value: 'star', label: 'Star' },
+  { value: 'bookmark', label: 'Bookmark' },
+  { value: 'folder', label: 'Folder' },
+  { value: 'link', label: 'Link' },
+  { value: 'code', label: 'Code' },
+  { value: 'document', label: 'Document' },
+  { value: 'chat', label: 'Chat' },
+  { value: 'calendar', label: 'Calendar' },
+  { value: 'cog', label: 'Settings' },
+  { value: 'globe', label: 'Globe' },
+];
+
 export function BookmarkForm({ bookmark, categoryId, categories, onSubmit, onCancel }) {
   const [title, setTitle] = useState('');
   const [url, setUrl] = useState('');
+  const [iconType, setIconType] = useState('favicon');
   const [iconUrl, setIconUrl] = useState('');
+  const [symbolName, setSymbolName] = useState('');
   const [selectedCategoryId, setSelectedCategoryId] = useState(categoryId || '');
   const [sortOrder, setSortOrder] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -15,7 +38,9 @@ export function BookmarkForm({ bookmark, categoryId, categories, onSubmit, onCan
     if (bookmark) {
       setTitle(bookmark.title || '');
       setUrl(bookmark.url || '');
+      setIconType(bookmark.icon_type || 'favicon');
       setIconUrl(bookmark.icon_url || '');
+      setSymbolName(bookmark.symbol_name || '');
       setSelectedCategoryId(bookmark.category_id || '');
       setSortOrder(bookmark.sort_order || 0);
     } else if (categoryId) {
@@ -32,7 +57,9 @@ export function BookmarkForm({ bookmark, categoryId, categories, onSubmit, onCan
       await onSubmit({
         title,
         url,
-        icon_url: iconUrl || null,
+        icon_type: iconType,
+        icon_url: iconType === 'custom' ? iconUrl : null,
+        symbol_name: iconType === 'symbol' ? symbolName : null,
         category_id: parseInt(selectedCategoryId, 10),
         sort_order: parseInt(sortOrder, 10),
       });
@@ -88,15 +115,50 @@ export function BookmarkForm({ bookmark, categoryId, categories, onSubmit, onCan
       </div>
 
       <div className="form-group">
-        <label htmlFor="iconUrl">Custom Icon URL (optional)</label>
-        <input
-          id="iconUrl"
-          type="url"
-          value={iconUrl}
-          onChange={(e) => setIconUrl(e.target.value)}
-          placeholder="https://example.com/icon.png"
-        />
+        <label htmlFor="iconType">Icon Type</label>
+        <select
+          id="iconType"
+          value={iconType}
+          onChange={(e) => setIconType(e.target.value)}
+        >
+          {ICON_TYPES.map((type) => (
+            <option key={type.value} value={type.value}>
+              {type.label}
+            </option>
+          ))}
+        </select>
       </div>
+
+      {iconType === 'custom' && (
+        <div className="form-group">
+          <label htmlFor="iconUrl">Custom Icon URL</label>
+          <input
+            id="iconUrl"
+            type="url"
+            value={iconUrl}
+            onChange={(e) => setIconUrl(e.target.value)}
+            placeholder="https://example.com/icon.png"
+          />
+        </div>
+      )}
+
+      {iconType === 'symbol' && (
+        <div className="form-group">
+          <label htmlFor="symbolName">Icon Symbol</label>
+          <select
+            id="symbolName"
+            value={symbolName}
+            onChange={(e) => setSymbolName(e.target.value)}
+          >
+            <option value="">Select icon</option>
+            {SYMBOL_OPTIONS.map((opt) => (
+              <option key={opt.value} value={opt.value}>
+                {opt.label}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
 
       <div className="form-group">
         <label htmlFor="sortOrder">Sort Order</label>
