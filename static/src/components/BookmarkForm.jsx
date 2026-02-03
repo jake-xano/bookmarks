@@ -35,7 +35,7 @@ export function BookmarkForm({ bookmark, categoryId, categories, onSubmit, onCan
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const isEditing = Boolean(bookmark);
+  const isEditing = Boolean(bookmark?.id);
   const selectedCategory = categories.find(c => c.id === parseInt(selectedCategoryId));
   const effectiveColor = hexColor || selectedCategory?.hex_color || '#8b5cf6';
 

@@ -32,12 +32,22 @@ function App() {
     setBookmarkModal({ isOpen: true, bookmark, categoryId: null });
   };
 
+  const handleDuplicateBookmark = (bookmark) => {
+    // Create a copy without the id so it's treated as a new bookmark
+    const duplicatedBookmark = {
+      ...bookmark,
+      id: null,
+      title: `${bookmark.title} (copy)`,
+    };
+    setBookmarkModal({ isOpen: true, bookmark: duplicatedBookmark, categoryId: bookmark.category_id });
+  };
+
   const handleAddBookmark = (category) => {
     setBookmarkModal({ isOpen: true, bookmark: null, categoryId: category.id });
   };
 
   const handleBookmarkSubmit = async (data) => {
-    if (bookmarkModal.bookmark) {
+    if (bookmarkModal.bookmark?.id) {
       await editBookmark(bookmarkModal.bookmark.id, data);
     } else {
       await addBookmark(data);
@@ -152,6 +162,7 @@ function App() {
               category={category}
               categoryIndex={index}
               onEditBookmark={handleEditBookmark}
+              onDuplicateBookmark={handleDuplicateBookmark}
               onDeleteBookmark={handleDeleteBookmark}
               onEditCategory={handleEditCategory}
               onDeleteCategory={handleDeleteCategory}
@@ -166,7 +177,7 @@ function App() {
       <Modal
         isOpen={bookmarkModal.isOpen}
         onClose={() => setBookmarkModal({ isOpen: false, bookmark: null, categoryId: null })}
-        title={bookmarkModal.bookmark ? 'Edit Bookmark' : 'Add Bookmark'}
+        title={bookmarkModal.bookmark?.id ? 'Edit Bookmark' : bookmarkModal.bookmark ? 'Duplicate Bookmark' : 'Add Bookmark'}
       >
         <BookmarkForm
           bookmark={bookmarkModal.bookmark}
