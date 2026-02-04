@@ -101,10 +101,39 @@ function App() {
 
   // Render access denied
   if (!hasToken) {
+    const handleTokenSubmit = (e) => {
+      e.preventDefault();
+      const token = e.target.token.value.trim();
+      if (token) {
+        window.location.href = `${window.location.pathname}?token=${encodeURIComponent(token)}`;
+      }
+    };
+
     return (
-      <div className="container">
-        <h1>{logoIcon}Bookmarks</h1>
-        <p className="error-message">Access denied. Please provide a valid token.</p>
+      <div className="auth-screen">
+        <div className="auth-card">
+          <div className="auth-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
+            </svg>
+          </div>
+          <h1>Bookmark Launcher</h1>
+          <p>Access your personalized bookmarks by entering your access token below.</p>
+          <form className="auth-form" onSubmit={handleTokenSubmit}>
+            <input
+              type="text"
+              name="token"
+              placeholder="Paste your token here"
+              autoFocus
+              autoComplete="off"
+            />
+            <button type="submit">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                <path d="M5 12h14M12 5l7 7-7 7" />
+              </svg>
+            </button>
+          </form>
+        </div>
       </div>
     );
   }
